@@ -28,8 +28,9 @@
 			function resizeCallback(){
 				var docW = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 				var docH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-				console.log('Resized to: '+docW+" X "+docH);
+				console.log('Screnn now: '+docW+" X "+docH);
 				// var imageElem = document.getElementById('image');
+				console.log("Image dims(1): "+imageElem.naturalWidth+" x "+imageElem.naturalHeight);
 				var imAspect = imageElem.naturalWidth/imageElem.naturalHeight;
 				var docAspect = docW/docH;
 				var factor = 1.0;
@@ -40,6 +41,7 @@
 					scale = docW/imageElem.naturalWidth*factor;
 				};
 				if(scale > 1.0) {scale = 1.0;}
+				console.log("Image dims(2): "+imageElem.naturalWidth+" x "+imageElem.naturalHeight);
 				var imW = imageElem.naturalWidth*scale;
 				var imH = imageElem.naturalHeight*scale;
 				console.log("scale, imW, imH="+scale+", "+imW+", "+imH);;
@@ -56,8 +58,9 @@
 			}
 			var imageIndex = 0;
 			function nextImage(){
+				console.log("nextImage="+imageIndex);
 				imageElem.src=images[imageIndex];
-				resizeCallback();
+				setTimeout(resizeCallback(), 50);
 				imageIndex = (imageIndex+1) % images.length;
 			}
 			function prevImage() {
