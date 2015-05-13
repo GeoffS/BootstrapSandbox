@@ -22,7 +22,7 @@
 			corners: 1, // Corner roundness (0..1)
 			rotate: 0, // The rotation offset
 			direction: 1, // 1: clockwise, -1: counterclockwise
-			color: '#00000f', // #rgb or #rrggbb or array of colors
+			color: '#ffffff', // #rgb or #rrggbb or array of colors
 			speed: 1, // Rounds per second
 			trail: 60, // Afterglow percentage
 			shadow: false, // Whether to render a shadow
@@ -120,6 +120,7 @@
 					checkCounter++;
 					if(checkCounter == 1) {
 						opts.top = oldImage.height/2+'px';
+						oldImage.style.opacity = 0.3;
 						spinner = new Spinner(opts).spin(imgDivElem);
 					}
 					checkWait *= 2;
