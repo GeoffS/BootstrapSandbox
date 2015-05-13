@@ -14,18 +14,44 @@
 						  '20140615_153502_950.jpg',
 						  'IMG_1321_screen.jpg',
 						  'IMG_8349_screen.jpg'];
+		var opts = {
+		    lines: 11, // The number of lines to draw
+			length: 35, // The length of each line
+			width: 11, // The line thickness
+			radius: 15, // The radius of the inner circle
+			corners: 1, // Corner roundness (0..1)
+			rotate: 0, // The rotation offset
+			direction: 1, // 1: clockwise, -1: counterclockwise
+			color: '#00000f', // #rgb or #rrggbb or array of colors
+			speed: 1, // Rounds per second
+			trail: 60, // Afterglow percentage
+			shadow: false, // Whether to render a shadow
+			hwaccel: false, // Whether to use hardware acceleration
+			className: 'spinner', // The CSS class to assign to the spinner
+			zIndex: 2e9, // The z-index (defaults to 2000000000)
+			top: '50%', // Top position relative to parent
+			left: '50%' // Left position relative to parent
+		};
 		</script>
 		<script src="screenfull.min.js"> </script>
+		<script src="spin.min.js"> </script>
 	</head>
-	<body id="body" style="background-color: black;margin:0;" onresize="resizeCallback()" onload="nextImage()">
-		<div style="padding:0; color:white;">
-			<img id="image" style="display:block;margin:0 auto 0 auto;" src="IMG_7180_screen.jpg" onclick="nextImage()"/>
+	<body id="body" style="background-color: black;margin:0;" onload="init()">
+		<div id="imageDiv" style="padding:0; color:white;">
+			<img id="image"/>
 			<!-- img id="image" style="display:block;margin:0 auto 0 auto;max-width:100vw;max-height:100vh;max-width:950px;max-height:544px;" src="IMG_7180_screen.jpg" alt="Wayne" / -->
 		</div>
 		<script>
-			var imageElem = document.getElementById('image');
+			
 			var bodyElem = document.getElementById('body');
-			function resizeCallback(){
+			var imgDivElem = document.getElementById('imageDiv');
+			var oldImage;
+			var newImage;
+			var spinner;
+			function resizeCallback() {
+				resize(document.getElementById('image'));
+			}
+			function resize(imageElem){
 				var docW = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 				var docH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 				console.log('Screnn now: '+docW+" X "+docH);
@@ -58,13 +84,54 @@
 			}
 			var imageIndex = 0;
 			function nextImage(){
-				console.log("nextImage="+imageIndex);
-				imageElem.src=images[imageIndex];
-				setTimeout(resizeCallback(), 50);
+				console.log("nextImage="+imageIndex+', '+images[imageIndex]);
+				oldImage = document.getElementById('image');
+				newImage = document.createElement("img");
+				newImage.src=images[imageIndex];
+				checkComplete(); 
+				
+			}
+			function nextImageStep2() {
+				console.log("newImg.complete="+newImage.complete);
+				if(spinner != null) { spinner.stop(); }
+				spinner = null;
+				checkCounter = 0;
+				newImage.style.display = 'block';
+				newImage.style.margin = '0 auto 0 auto';
+				newImage.onclick = nextImage;
+				newImage.id='image';
+				imgDivElem.replaceChild(newImage, oldImage);
+				resize(newImage);
 				imageIndex = (imageIndex+1) % images.length;
 			}
 			function prevImage() {
 				
+			}
+			var checkCounter = 0;
+			var checkWait = 50;
+			function checkComplete() {
+				console.log('oldImage='+oldImage.src);
+				console.log('newImage='+newImage.src);
+				console.log('newImage.complete='+newImage.complete);
+				if(newImage.complete || checkCounter > 10) {
+				//if(checkCounter > 5) { // for spinner testing
+					nextImageStep2();
+				} else {
+					checkCounter++;
+					if(checkCounter == 1) {
+						opts.top = oldImage.height/2+'px';
+						spinner = new Spinner(opts).spin(imgDivElem);
+					}
+					checkWait *= 2;
+					checkWait = Math.min(checkWait, 500);
+					console.log('About to wait...'+checkWait);
+					setTimeout(checkComplete, checkWait);
+				}
+			}
+			function init() {
+				console.log('init()');
+				nextImage();
+				bodyElem.onresize = resizeCallback;
 			}
 		</script>
 	</body>
