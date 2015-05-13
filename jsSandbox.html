@@ -35,23 +35,46 @@
 		</script>
 		<script src="screenfull.min.js"> </script>
 		<script src="spin.min.js"> </script>
+		<script src="hammer.min.js"> </script>
+		<script src="screenfull.min.js"> </script>
 	</head>
 	<body id="body" style="background-color: black;margin:0;" onload="init()">
 		<div id="imageDiv" style="padding:0; color:white;">
 			<img id="image"/>
 			<!-- img id="image" style="display:block;margin:0 auto 0 auto;max-width:100vw;max-height:100vh;max-width:950px;max-height:544px;" src="IMG_7180_screen.jpg" alt="Wayne" / -->
 		</div>
+		<div id="footer" style="color:white;text-align:center;"> </div>
 		<script>
 			
 			var bodyElem = document.getElementById('body');
 			var imgDivElem = document.getElementById('imageDiv');
+			var footer = document.getElementById('footer');
 			var oldImage;
 			var newImage;
 			var spinner;
+			
+			var hammertime = new Hammer(bodyElem);
+			// hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+			// hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+			hammertime.on('swipe pan tap', function(ev){
+				console.log('Gesture: '+ev.type);
+				footer.innerHTML = "hammertime.on('swipe')"+ev.type;
+				switch(ev.type) {
+					case 'swipeup':
+						screenfull.request(bodyElem);
+						break;
+				}
+				if (screenfull.enabled) {
+					console.log('about to do screenfull.request(e1)...');
+        			
+        		}
+			});
+			
 			function resizeCallback() {
 				resize(document.getElementById('image'));
 			}
 			function resize(imageElem){
+				footer.innerHTML = "resize()";
 				var docW = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 				var docH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 				console.log('Screnn now: '+docW+" X "+docH);
@@ -84,6 +107,7 @@
 			}
 			var imageIndex = 0;
 			function nextImage(){
+				footer.innerHTML = 'nextImage()';
 				console.log("nextImage="+imageIndex+', '+images[imageIndex]);
 				oldImage = document.getElementById('image');
 				newImage = document.createElement("img");
@@ -131,6 +155,7 @@
 			}
 			function init() {
 				console.log('init()');
+				footer.innerHTML = 'init()';
 				nextImage();
 				bodyElem.onresize = resizeCallback;
 			}
