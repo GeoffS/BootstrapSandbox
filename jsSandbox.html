@@ -56,36 +56,33 @@
 			
 			var hammertime = new Hammer(bodyElem);
 			hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
-			hammertime.on('swipe', function(ev){
+			hammertime.on('swipe', swipeHandler);
+			
+			function swipeHandler(ev){
 				console.log('Gesture: '+ev.type);
 				footer.innerHTML = "hammertime.on()"+ev.type+', '+ev.direction;
-				switch(ev.direction) {
-					case Hammer.DIRECTION_UP:
-						if (screenfull.enabled) {
-							if(screenfull.isFullscreen) {
-	                            console.log('about to do screenfull.exit()...');
-	                            screenfull.exit(bodyElem);
-                          } else {
-                          	console.log("Going to parent: "+parent);
-								window.location.href = parent;
-                          }
-                        }
-                        break;
-                     case Hammer.DIRECTION_DOWN:
-                        if (screenfull.enabled) {
-                            console.log('about to do screenfull.request()...');
-                            screenfull.request(bodyElem);
-                        }
-                        break;
-                    case Hammer.DIRECTION_RIGHT:
-                         nextImage();
-                         break;
-                    case Hammer.DIRECTION_LEFT:
-                         prevImage();
-                         break;
-			     }
-			 });
-			
+				if((ev.direction & Hammer.DIRECTION_UP) != 0) {
+					if(screenfull.enabled) {
+						if(screenfull.isFullscreen) {
+							console.log('about to do screenfull.exit()...');
+							screenfull.exit(bodyElem);
+						} else {
+							console.log("Going to parent: "+parent);
+							window.location.href = parent;
+						}
+					}
+				} else if ((ev.direction & Hammer.DIRECTION_DOWN) != 0) {
+					if (screenfull.enabled) {
+						console.log('about to do screenfull.request()...');
+						screenfull.request(bodyElem);
+					}
+				} else if ((ev.direction & Hammer.DIRECTION_RIGHT) != 0) {
+					nextImage();
+				} else if((ev.direction & Hammer.DIRECTION_LEFT) != 0) {
+					prevImage();
+				}
+			}
+			 
 			function resizeCallback() {
 				resize(document.getElementById('image'));
 			}
