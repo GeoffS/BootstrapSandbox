@@ -116,11 +116,16 @@
         		}
 			}
 			var imageIndex = -1;
+			var updating = false;
 			function nextImage(){
+    			if(updating) return;
+                    updating = true;
                 imageIndex = (imageIndex+1) % images.length;
                 updateImage();
 			}
 			function prevImage() {
+                if(updating) return;
+                    updating = true;
                 imageIndex--;
                 if (imageIndex < 0) {
                     imageIndex = images.length-1;
@@ -133,10 +138,11 @@
 				oldImage = document.getElementById('image');
 				newImage = document.createElement("img");
 				newImage.src=images[imageIndex];
+				checking = true;
 				checkComplete(); 
-				
 			}
 			function nextImageStep2() {
+                checking = false;
 				console.log("newImg.complete="+newImage.complete);
 				if(spinner != null) { spinner.stop(); }
 				spinner = null;
@@ -147,6 +153,7 @@
 				newImage.id='image';
 				imgDivElem.replaceChild(newImage, oldImage);
 				resize(newImage);
+				updating = false;
 			}
 			var checkCounter = 0;
 			var checkWait = 50;
@@ -154,8 +161,8 @@
 				console.log('oldImage='+oldImage.src);
 				console.log('newImage='+newImage.src);
 				console.log('newImage.complete='+newImage.complete);
-				//if(newImage.complete || checkCounter > 10) {
-				if(checkCounter > 3) { // for spinner testing
+				if(newImage.complete || checkCounter > 10) {
+				//if(checkCounter > 3) { // for spinner testing
 					nextImageStep2();
 				} else {
 					checkCounter++;
