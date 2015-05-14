@@ -5,14 +5,14 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
 		<script>
-			var images = ['IMG_7180_screen.jpg',
-						  '20140614_181525_1000_2.jpg',
+			var images = ['20140614_181525_1000_2.jpg',
+                          '20140615_153502_950.jpg',
+                          'blokartDust.jpg',
 						  'IMG_1244_screen.jpg',
+                          'IMG_1321_screen.jpg',
 						  'IMG_1420_screen.jpg',
-						  'IMG_7740.jpg',
-						  'blokartDust.jpg',
-						  '20140615_153502_950.jpg',
-						  'IMG_1321_screen.jpg',
+						  'IMG_7180_screen.jpg',
+                          'IMG_7740.jpg',
 						  'IMG_8349_screen.jpg'];
 		var opts = {
 		    lines: 11, // The number of lines to draw
@@ -54,21 +54,31 @@
 			var spinner;
 			
 			var hammertime = new Hammer(bodyElem);
-			// hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
-			// hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
-			hammertime.on('swipe pan tap', function(ev){
+			hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+			hammertime.on('swipe', function(ev){
 				console.log('Gesture: '+ev.type);
-				footer.innerHTML = "hammertime.on('swipe')"+ev.type;
-				switch(ev.type) {
-					case 'swipeup':
-						screenfull.request(bodyElem);
-						break;
-				}
-				if (screenfull.enabled) {
-					console.log('about to do screenfull.request(e1)...');
-        			
-        		}
-			});
+				footer.innerHTML = "hammertime.on()"+ev.type+', '+ev.direction;
+				switch(ev.direction) {
+					case Hammer.DIRECTION_UP:
+						if (screenfull.enabled) {
+                            console.log('about to do screenfull.request()...');
+                            screenfull.request(bodyElem);
+                        }
+                        break;
+                     case Hammer.DIRECTION_DOWN:
+                        if (screenfull.enabled) {
+                            console.log('about to do screenfull.exit()...');
+                            screenfull.exit(bodyElem);
+                        }
+                        break;
+                    case Hammer.DIRECTION_RIGHT:
+                         nextImage();
+                         break;
+                    case Hammer.DIRECTION_LEFT:
+                         prevImage();
+                         break;
+			     }
+			 });
 			
 			function resizeCallback() {
 				resize(document.getElementById('image'));
@@ -105,8 +115,19 @@
         			// screenfull.request(bodyElem);
         		}
 			}
-			var imageIndex = 0;
+			var imageIndex = -1;
 			function nextImage(){
+                imageIndex = (imageIndex+1) % images.length;
+                updateImage();
+			}
+			function prevImage() {
+                imageIndex--;
+                if (imageIndex < 0) {
+                    imageIndex = images.length-1;
+                }
+                updateImage();
+            }
+			function updateImage() {
 				footer.innerHTML = 'nextImage()';
 				console.log("nextImage="+imageIndex+', '+images[imageIndex]);
 				oldImage = document.getElementById('image');
@@ -122,14 +143,10 @@
 				checkCounter = 0;
 				newImage.style.display = 'block';
 				newImage.style.margin = '0 auto 0 auto';
-				newImage.onclick = nextImage;
+				//newImage.onclick = nextImage;
 				newImage.id='image';
 				imgDivElem.replaceChild(newImage, oldImage);
 				resize(newImage);
-				imageIndex = (imageIndex+1) % images.length;
-			}
-			function prevImage() {
-				
 			}
 			var checkCounter = 0;
 			var checkWait = 50;
@@ -137,8 +154,8 @@
 				console.log('oldImage='+oldImage.src);
 				console.log('newImage='+newImage.src);
 				console.log('newImage.complete='+newImage.complete);
-				if(newImage.complete || checkCounter > 10) {
-				//if(checkCounter > 5) { // for spinner testing
+				//if(newImage.complete || checkCounter > 10) {
+				if(checkCounter > 3) { // for spinner testing
 					nextImageStep2();
 				} else {
 					checkCounter++;
