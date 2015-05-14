@@ -52,6 +52,7 @@
 			var oldImage;
 			var newImage;
 			var spinner;
+			var parent;
 			
 			var hammertime = new Hammer(bodyElem);
 			hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
@@ -61,14 +62,19 @@
 				switch(ev.direction) {
 					case Hammer.DIRECTION_UP:
 						if (screenfull.enabled) {
-                            console.log('about to do screenfull.request()...');
-                            screenfull.request(bodyElem);
+							if(screenfull.isFullscreen) {
+	                            console.log('about to do screenfull.exit()...');
+	                            screenfull.exit(bodyElem);
+                          } else {
+                          	console.log("Going to parent: "+parent);
+								window.location.href = parent;
+                          }
                         }
                         break;
                      case Hammer.DIRECTION_DOWN:
                         if (screenfull.enabled) {
-                            console.log('about to do screenfull.exit()...');
-                            screenfull.exit(bodyElem);
+                            console.log('about to do screenfull.request()...');
+                            screenfull.request(bodyElem);
                         }
                         break;
                     case Hammer.DIRECTION_RIGHT:
@@ -180,6 +186,8 @@
 			function init() {
 				console.log('init()');
 				footer.innerHTML = 'init()';
+				parent = window.location.href.substring(0,window.location.href.length-14);
+				console.log('Parent URL: '+parent);
 				nextImage();
 				bodyElem.onresize = resizeCallback;
 			}
