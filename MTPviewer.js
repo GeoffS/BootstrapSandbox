@@ -56,11 +56,8 @@ function swipeHandler(ev){
         prevImage();
     }
 }
- 
-function resizeCallback() {
-    resize(document.getElementById('image'));
-}
-function resize(imageElem){
+function resize(){
+    var imageElem = document.getElementById('image');
     footer.innerHTML = "resize()";
     var docW = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     var docH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
@@ -158,5 +155,5 @@ function init() {
     parent = window.location.href.substring(0,window.location.href.length-15);
     console.log('Parent URL: '+parent);
     nextImage();
-    bodyElem.onresize = resizeCallback;
+    bodyElem.onresize = resize;
 }
