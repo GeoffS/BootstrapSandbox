@@ -115,11 +115,9 @@ function updateImage() {
     oldImage = document.getElementById('image');
     newImage = document.createElement("img");
     newImage.src=images[imageIndex];
-    checking = true;
     checkComplete(); 
 }
 function nextImageStep2() {
-    checking = false;
     console.log("newImg.complete="+newImage.complete);
     if(spinner != null) { spinner.stop(); }
     spinner = null;
